@@ -1,8 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
+/** Blog routes, posts & comments */
+
 router.get("/", (req, res) => {
-	res.send("GET index, redirect to all posts");
+	// redirect to ALL posts for now -- note we must include full path
+	res.redirect("/blog/posts");
 });
 
 router.get("/posts", (req, res) => {
@@ -14,7 +17,8 @@ router.post("/posts", (req, res) => {
 });
 
 router.get("/posts/:id", (req, res) => {
-	res.send("GET - read single post by id");
+	//res.send("GET - read single post by id");
+	res.send(`GET for post ${req.params.id}`);
 });
 
 router.put("/posts/:id", (req, res) => {
