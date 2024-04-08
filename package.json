@@ -1,0 +1,32 @@
+{
+	"name": "blogging-api",
+	"version": "1.0.0",
+	"description": "Node & Express API for blogging operations",
+	"main": "app.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"dev": "nodemon app.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/PiraTechnics/blogging-api.git"
+	},
+	"author": "PiraTechnics",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/PiraTechnics/blogging-api/issues"
+	},
+	"homepage": "https://github.com/PiraTechnics/blogging-api#readme",
+	"devDependencies": {
+		"nodemon": "^3.1.0"
+	},
+	"dependencies": {
+		"cors": "^2.8.5",
+		"dotenv": "^16.4.5",
+		"express": "^4.19.2",
+		"express-async-handler": "^1.2.0",
+		"express-validator": "^7.0.1",
+		"http-errors": "^2.0.0",
+		"jsonwebtoken": "^9.0.2"
+	}
+}
