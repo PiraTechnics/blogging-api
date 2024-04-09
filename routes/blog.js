@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const verifyToken = require("../middleware/verifyToken");
+const blogController = require("../controllers/blogController");
 
 /** Blog routes, posts & comments */
 
@@ -8,25 +10,18 @@ router.get("/", (req, res) => {
 	res.redirect("/blog/posts");
 });
 
-router.get("/posts", (req, res) => {
-	res.send("GET - read all posts");
+router.get("/posts", blogController.getAllArticles);
+
+router.post("/posts", verifyToken, blogController.createNewArticle);
+
+router.get("/posts/:slug", blogController.getArticle);
+
+router.put("/posts/:slug", (req, res) => {
+	res.send("PUT - update single post by slug (url identifier)");
 });
 
-router.post("/posts", (req, res) => {
-	res.send("POST - create new post from body data");
-});
-
-router.get("/posts/:id", (req, res) => {
-	//res.send("GET - read single post by id");
-	res.send(`GET for post ${req.params.id}`);
-});
-
-router.put("/posts/:id", (req, res) => {
-	res.send("PUT - update single post by id");
-});
-
-router.delete("/posts/:id", (req, res) => {
-	res.send("DELETE - delete single post by id");
+router.delete("/posts/:slug", (req, res) => {
+	res.send("DELETE - delete single post by slug (url identifier)");
 });
 
 module.exports = router;

@@ -1,9 +1,14 @@
 const jwt = require("jsonwebtoken");
 
 //Verify token middleware function
-export const verifyToken = (req, res, next) => {
+const verifyToken = (req, res, next) => {
 	//get auth header value
 	const bearerHeader = req.headers["authorization"];
+
+	if (typeof bearerHeader === `undefined`) {
+		// if our bearerHeader doesn't exist, throw 400 bad request
+		return res.sendStatus(400);
+	}
 
 	// split at space between 'bearer' and token
 	const bearer = bearerHeader.split(" ");
@@ -23,3 +28,5 @@ export const verifyToken = (req, res, next) => {
 		next();
 	});
 };
+
+module.exports = verifyToken;

@@ -5,6 +5,7 @@ const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 
 exports.register = [
+	// Validate user-entered data
 	body("firstname", "Name cannot be empty").trim().not().isEmpty(),
 	body("lastname", "Name cannot be empty").trim().not().isEmpty(),
 	body("username", "Name must contain at least 6 characters")
@@ -24,6 +25,7 @@ exports.register = [
 			return res.status(400).json(errors);
 		}
 
+		// Convert chosen password into a salted hash (automatic w/bcrypt)
 		bcrypt.hash(req.body.password, 10, async (err, hashedPassword) => {
 			const newUser = new User({
 				username: req.body.username,
@@ -39,7 +41,7 @@ exports.register = [
 				.exec();
 
 			if (usernameTaken) {
-				//Error code 400 since user is taken
+				// Usernames must be unique
 				return res
 					.status(400)
 					.json({ error: "A user with that name already exists" });
@@ -52,9 +54,8 @@ exports.register = [
 ];
 
 exports.login = asyncHandler(async (req, res, next) => {
-	// Authenticate User
+	// Authenticate User and generate a token (expires in 1 hr)
 
-	//If user is legit, create auth token for them, which we will verify on every protected route
 	const user = await User.findOne({ username: req.body.username });
 	if (user === null) {
 		// No user found
@@ -62,7 +63,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 			message: "Authenication Failed: Invalid username or password",
 		});
 	} else {
-		// Compare entered password to user's pw in db
+		// Compare entered password to stored hash
 		const passwordMatch = await bcrypt.compare(
 			req.body.password,
 			user.password
@@ -72,15 +73,15 @@ exports.login = asyncHandler(async (req, res, next) => {
 			const payload = {
 				user_id: user._id,
 				username: user.username,
-				author: true,
-			}; //change the author bool later
+				full_name: user.full_name,
+			};
 			const secret = process.env.SECRET;
-			const options = { expiresIn: "24h", algorithm: "HS256" };
+			const options = { expiresIn: "1h", algorithm: "HS256" };
 			jwt.sign(payload, secret, options, (err, token) => {
 				res.json({ token: token, message: "Login Successful" });
 			});
 		} else {
-			//passwords don't match
+			// Passwords don't match
 			res.sendStatus(401).json({
 				message: "Authenication Failed: Invalid username or password",
 			});

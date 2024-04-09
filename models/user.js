@@ -12,4 +12,8 @@ const UserSchema = new Schema({
 	admin: { type: Boolean, required: true, default: false }, //authorization for creating, updating, deleting posts, as well as moderating comments.
 });
 
+UserSchema.virtual("full_name").get(function () {
+	return `${this.firstname} ${this.lastname}`;
+});
+
 module.exports = mongoose.model("User", UserSchema);
