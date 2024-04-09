@@ -9,7 +9,7 @@ const blogRouter = require("./routes/blog");
 // Setup Routes and JSON
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors()); //CORS enabled for all origins -- NOTE: change this for deployment
 app.use("/auth", authRouter);
 app.use("/blog", blogRouter);
 
@@ -19,7 +19,7 @@ app.use(function (err, req, res, next) {
 	res.locals.message = err.message;
 	res.locals.error = req.app.get("env") === "development" ? err : {};
 
-	// render the error page
+	// Send an error message
 	res.status(err.status || 500);
 	res.json({ error: err.message });
 });

@@ -16,13 +16,9 @@ router.post("/posts", verifyToken, blogController.createNewArticle);
 
 router.get("/posts/:slug", blogController.getArticle);
 
-router.put("/posts/:slug", (req, res) => {
-	res.send("PUT - update single post by slug (url identifier)");
-});
+router.put("/posts/:slug", verifyToken, blogController.updateArticle);
 
-router.delete("/posts/:slug", (req, res) => {
-	res.send("DELETE - delete single post by slug (url identifier)");
-});
+router.delete("/posts/:slug", verifyToken, blogController.deleteArticle);
 
 module.exports = router;
 

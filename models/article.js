@@ -17,24 +17,49 @@ const ArticleSchema = new Schema({
 });
 
 ArticleSchema.pre("save", async function (next) {
-	const user = this;
-	user.slug = slugify(this.title, {
+	const articleSlug = slugify(this.title, {
 		replacement: "-",
 		lower: true,
 		strict: true,
 		locale: "en",
 	});
 
-	//Check if slug already exists for an entry
-	const slugExists = await this.constructor.findOne({ slug: this.slug }).exec();
+	const slugExists = await this.constructor
+		.findOne({ slug: articleSlug })
+		.exec();
 	if (slugExists) {
 		const err = new Error("Blog with with url already exists");
 		err.status = 401;
 		next(err);
 	}
 
+	this.slug = articleSlug;
+	console.log(`Slug Created: ${this.slug}`);
 	next();
 });
+
+/* ArticleSchema.post("save", async function (next) {
+	console.log(`New Title: ${this.title}`);
+	const articleSlug = slugify(this.title, {
+		replacement: "-",
+		lower: true,
+		strict: true,
+		locale: "en",
+	});
+	
+	const slugExists = await this.constructor
+		.findOne({ slug: articleSlug })
+		.exec();
+	if (slugExists) {
+		const err = new Error("Blog with with url already exists");
+		err.status = 401;
+		next(err);
+	}
+	
+	this.slug = articleSlug;
+	console.log(`Slug Updated: ${this.slug}`);
+	next();
+}); */
 
 ArticleSchema.virtual("url").get(function () {
 	return `/blog/posts/${this.slug}`;
