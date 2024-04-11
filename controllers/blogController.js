@@ -6,11 +6,12 @@ exports.getArticles = asyncHandler(async (req, res, next) => {
 	//allow filtering and pagination
 	const limit = parseInt(req.query.limit) || 0;
 
-	const allArticles = await Article.find()
+	const articles = await Article.find()
 		.sort({ datePosted: 1 })
+		.populate("author", "firstname lastname")
 		.limit(limit)
 		.exec();
-	res.json(allArticles);
+	res.json(articles);
 });
 
 exports.getArticle = asyncHandler(async (req, res, next) => {
