@@ -32,17 +32,21 @@ ArticleSchema.pre("save", async function (next) {
 		locale: "en",
 	});
 
-	const slugExists = await this.constructor
-		.findOne({ slug: articleSlug })
-		.exec();
-	if (slugExists) {
-		const err = new Error("Article with with url already exists");
-		err.status = 401;
-		next(err);
+	if (articleSlug !== this.slug) {
+		//Only run if slug needs updating
+		const slugExists = await this.constructor
+			.findOne({ slug: articleSlug })
+			.exec();
+		if (slugExists) {
+			const err = new Error("Article with with url already exists");
+			err.status = 401;
+			next(err);
+		}
+
+		this.slug = articleSlug;
+		//console.log(`Slug Created: ${this.slug}`);
 	}
 
-	this.slug = articleSlug;
-	console.log(`Slug Created: ${this.slug}`);
 	next();
 });
 

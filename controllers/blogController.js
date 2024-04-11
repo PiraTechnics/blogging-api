@@ -43,7 +43,7 @@ exports.createNewArticle = [
 			title: req.body.title,
 			content: req.body.content,
 			author: req.user.user_id,
-			published: true,
+			published: req.body.publish,
 		});
 
 		const result = await newArticle.save();
@@ -59,15 +59,15 @@ exports.updateArticle = [
 			return res.status(400).json(errors);
 		}
 
-		const oldArticle = await Article.findOne({ slug: req.params.slug }).exec();
+		const article = await Article.findOne({ slug: req.params.slug }).exec();
 
-		if (!oldArticle) {
+		if (!article) {
 			//Article doesn't exist to begin with
 			return res.status(404).json({ error: "Blog Post Not Found" });
 		}
 
 		// Only authors of an article can update it
-		if (oldArticle.author.toString() !== req.user.user_id) {
+		if (article.author.toString() !== req.user.user_id) {
 			console.log(req.user.user_id);
 			console.log(oldArticle.author.toString());
 			return res
@@ -75,23 +75,12 @@ exports.updateArticle = [
 				.json({ error: "You are not authorized to update Blog Post" });
 		}
 
-		const updatedArticle = new Article({
-			title: req.body.title,
-			content: req.body.content,
-			author: req.user.user_id,
-			published: true,
-			dateUpdated: Date.now(),
-			slug: oldArticle.slug, //preserve for now, until we figure out how to update
-			_id: oldArticle.id, // Use old Id so we don't change it
-		});
+		article.title = req.body.title;
+		article.content = req.body.content;
+		article.published = req.body.publish;
+		article.dateUpdated = Date.now();
 
-		const result = await Article.findByIdAndUpdate(
-			oldArticle.id,
-			updatedArticle
-		);
-
-		console.log(result);
-		//await result.save();
+		const result = await article.save();
 		res.redirect(result.url); // Redirect to updated Blog Post
 	}),
 ];

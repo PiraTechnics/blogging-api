@@ -40,9 +40,9 @@ exports.createNewComment = [
 		};
 
 		article.comments.push(newComment);
-		await Article.findByIdAndUpdate(article.id, article);
 
-		res.redirect(article.url);
+		const result = await article.save();
+		res.redirect(result.url);
 	}),
 ];
 
