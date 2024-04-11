@@ -12,7 +12,7 @@ router.get("/", (req, res) => {
 	res.redirect("/blog/posts");
 });
 
-router.get("/posts", blogController.getAllArticles);
+router.get("/posts", blogController.getArticles);
 
 router.post(
 	"/posts",

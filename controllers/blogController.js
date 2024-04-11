@@ -2,8 +2,14 @@ const Article = require("../models/article");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 
-exports.getAllArticles = asyncHandler(async (req, res, next) => {
-	const allArticles = await Article.find().sort({ datePosted: 1 }).exec();
+exports.getArticles = asyncHandler(async (req, res, next) => {
+	//allow filtering and pagination
+	const limit = parseInt(req.query.limit) || 0;
+
+	const allArticles = await Article.find()
+		.sort({ datePosted: 1 })
+		.limit(limit)
+		.exec();
 	res.json(allArticles);
 });
 

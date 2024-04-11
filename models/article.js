@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 require("dotenv").config();
 const User = require("./user");
-//const Comment = require("./comment");
 const slugify = require("slugify");
 
 mongoose.connect(process.env.DB_STRING);
