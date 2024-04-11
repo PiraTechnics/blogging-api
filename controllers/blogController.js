@@ -1,5 +1,4 @@
 const Article = require("../models/article");
-const Comment = require("../models/comment");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 
@@ -48,9 +47,7 @@ exports.createNewArticle = [
 		});
 
 		const result = await newArticle.save();
-		//console.log(result);
 		res.redirect(result.url);
-		// Redirect to route that calls getArticle
 	}),
 ];
 

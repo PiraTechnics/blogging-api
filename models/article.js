@@ -2,10 +2,16 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 require("dotenv").config();
 const User = require("./user");
-const Comment = require("./comment");
+//const Comment = require("./comment");
 const slugify = require("slugify");
 
 mongoose.connect(process.env.DB_STRING);
+
+const CommentSchema = new Schema({
+	content: { type: String, required: true, default: "" },
+	datePosted: { type: Date, default: Date.now },
+	commentor: { type: String, required: true },
+});
 
 const ArticleSchema = new Schema({
 	title: { type: String, required: true, unique: true },
@@ -13,9 +19,9 @@ const ArticleSchema = new Schema({
 	author: { type: Schema.Types.ObjectId, ref: User, required: true },
 	datePosted: { type: Date, default: Date.now },
 	dateUpdated: { type: Date, default: Date.now },
-	published: { type: Boolean, default: false }, //will need a way to update this/set it manually
+	published: { type: Boolean, default: false }, //NOTE: will need a way to update this/set it manually
 	slug: { type: String, unique: true, default: "" },
-	comments: [{ type: Schema.Types.ObjectId, ref: Comment }],
+	comments: [CommentSchema],
 });
 
 ArticleSchema.pre("save", async function (next) {

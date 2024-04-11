@@ -1,4 +1,3 @@
-const Comment = require("../models/comment");
 const Article = require("../models/article");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
@@ -35,35 +34,35 @@ exports.createNewComment = [
 			}
 		}
 
-		const newComment = new Comment({
+		const newComment = {
 			content: req.body.content,
 			commentor: req.user ? req.user.username : "Anonymous User",
-		});
+		};
 
-		const result = await newComment.save();
-		article.comments.push(result.id); //Add newly saved comment to article's comments array
-		await Article.findByIdAndUpdate(article.id, article); //update in mongodb
+		article.comments.push(newComment);
+		await Article.findByIdAndUpdate(article.id, article);
 
 		res.redirect(article.url);
 	}),
 ];
 
 exports.deleteComment = asyncHandler(async (req, res, next) => {
-	const [article, comment] = await Promise.all([
-		Article.findOne({ slug: req.params.slug }).exec(),
-		Comment.findById(req.params.id).exec(),
-	]);
+	const article = await Article.findOne({ slug: req.params.slug }).exec();
 
-	if (!article || !comment) {
-		return res.status(404).json({ error: "Blog Post or Comment not found" });
+	if (!article) {
+		return res.status(404).json({ error: "Blog Post not found" });
 	}
 
-	//remove both comment and ref to it in the article
+	const comment = article.comments.find(
+		(entry) => entry.id.toString() === req.params.id
+	);
+
+	if (!comment) {
+		return res.status(404).json({ error: "Comment not found" });
+	}
+
 	article.comments.remove(comment.id);
-	await Promise.all([
-		Article.findByIdAndUpdate(article.id, article),
-		Comment.findByIdAndDelete(comment.id),
-	]);
+	await Article.findByIdAndUpdate(article.id, article);
 
 	res.redirect(article.url);
 });

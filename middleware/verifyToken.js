@@ -7,7 +7,7 @@ const verifyToken = (req, res, next) => {
 
 	if (typeof bearerHeader === `undefined`) {
 		// if our bearerHeader doesn't exist, throw 400 bad request
-		return res.sendStatus(400);
+		return res.status(400).json({ error: "Malformed or missing token" });
 	}
 
 	// split at space between 'bearer' and token
