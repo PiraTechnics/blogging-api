@@ -32,6 +32,8 @@ exports.register = [
 				password: hashedPassword,
 				firstname: req.body.firstname,
 				lastname: req.body.lastname,
+				// assign authorship status if correct code entered
+				admin: req.body.authorCode === process.env.ADMIN_CODE ? true : false,
 			});
 
 			const usernameTaken = await User.findOne({
@@ -74,6 +76,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 				user_id: user._id,
 				username: user.username,
 				full_name: user.full_name,
+				admin: user.admin,
 			};
 			const secret = process.env.SECRET;
 			const options = { expiresIn: "1h", algorithm: "HS256" };

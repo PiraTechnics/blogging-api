@@ -22,7 +22,7 @@ const verifyToken = (req, res, next) => {
 	//Verify token is valid
 	jwt.verify(bearerToken, process.env.SECRET, (err, user) => {
 		if (err) {
-			return res.sendStatus(403); //throw 403 forbidden
+			return res.status(403).json({ error: "Invalid Token" });
 		}
 		req.user = user;
 		next();

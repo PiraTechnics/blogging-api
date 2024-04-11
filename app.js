@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const app = express();
@@ -10,11 +11,12 @@ const blogRouter = require("./routes/blog");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors()); //CORS enabled for all origins -- NOTE: change this for deployment
+
 app.use("/auth", authRouter);
 app.use("/blog", blogRouter);
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use((err, req, res, next) => {
 	// set locals, only providing error in development
 	res.locals.message = err.message;
 	res.locals.error = req.app.get("env") === "development" ? err : {};

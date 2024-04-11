@@ -1,4 +1,5 @@
 const Article = require("../models/article");
+const Comment = require("../models/comment");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 
@@ -10,10 +11,12 @@ exports.getAllArticles = asyncHandler(async (req, res, next) => {
 exports.getArticle = asyncHandler(async (req, res, next) => {
 	const article = await Article.findOne({ slug: req.params.slug }) //Slugs should be unique
 		.populate("author", "username")
+		.populate("comments")
 		.exec();
 	if (!article) {
 		return res.status(404).json({ error: "Blog Post not found" });
 	}
+
 	res.json(article);
 });
 
