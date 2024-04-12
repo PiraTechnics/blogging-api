@@ -23,7 +23,7 @@ app.use((err, req, res, next) => {
 
 	// Send an error message
 	res.status(err.status || 500);
-	res.json({ error: err.message });
+	res.json({ status: err.status, message: err.message });
 });
 
 // Start server, listening on specified in our ENV

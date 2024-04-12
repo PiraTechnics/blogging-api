@@ -1,6 +1,7 @@
 const Article = require("../models/article");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
+const createError = require("http-errors");
 
 exports.getArticles = asyncHandler(async (req, res, next) => {
 	//allow filtering and pagination
@@ -20,7 +21,8 @@ exports.getArticle = asyncHandler(async (req, res, next) => {
 		.populate("comments")
 		.exec();
 	if (!article) {
-		return res.status(404).json({ error: "Blog Post not found" });
+		const err = next(createError(404, "Blog Post not found"));
+		next(err);
 	}
 
 	res.json(article);
@@ -31,6 +33,7 @@ exports.createNewArticle = [
 	asyncHandler(async (req, res, next) => {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
+			//NOTE: should we use createError here on each, or leave as is?
 			return res.status(400).json(errors);
 		}
 
@@ -41,9 +44,8 @@ exports.createNewArticle = [
 			.exec();
 
 		if (titleExists) {
-			return res
-				.status(400)
-				.json({ error: "Blog Post with title already exists" });
+			const err = createError(400, "Blog Post with title already exists");
+			next(err);
 		}
 
 		const newArticle = new Article({
@@ -70,16 +72,20 @@ exports.updateArticle = [
 
 		if (!article) {
 			//Article doesn't exist to begin with
-			return res.status(404).json({ error: "Blog Post Not Found" });
+			const err = createError(404, "Blog Post Not Found");
+			next(err);
 		}
 
 		// Only authors of an article can update it
 		if (article.author.toString() !== req.user.user_id) {
 			console.log(req.user.user_id);
 			console.log(oldArticle.author.toString());
-			return res
-				.status(403)
-				.json({ error: "You are not authorized to update Blog Post" });
+
+			const err = createError(
+				403,
+				"You are not authorized to update Blog Post"
+			);
+			next(err);
 		}
 
 		article.title = req.body.title;
@@ -97,14 +103,14 @@ exports.deleteArticle = asyncHandler(async (req, res, next) => {
 
 	if (!article) {
 		//Article doesn't exist to begin with
-		return res.status(404).json({ error: "Blog Post Not Found" });
+		const err = createError(404, "Blog Post Not Found");
+		next(err);
 	}
 
 	// Only authors of an article can delete it
 	if (article.author.toString() !== req.user.user_id) {
-		return res
-			.status(403)
-			.json({ error: "You are not authorized to delete Blog Post" });
+		const err = createError(403, "You are not authorized to delete Blog Post");
+		next(err);
 	}
 
 	await Article.findOneAndDelete({ slug: req.params.slug });

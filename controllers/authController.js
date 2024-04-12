@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
+const createError = require("http-errors");
 
 exports.register = [
 	// Validate user-entered data
@@ -61,9 +62,8 @@ exports.login = asyncHandler(async (req, res, next) => {
 	const user = await User.findOne({ username: req.body.username });
 	if (user === null) {
 		// No user found
-		res.status(401).json({
-			message: "Authenication Failed: Invalid username or password",
-		});
+		const err = createError(401, "Invalid username or password");
+		next(err);
 	} else {
 		// Compare entered password to stored hash
 		const passwordMatch = await bcrypt.compare(
@@ -81,13 +81,12 @@ exports.login = asyncHandler(async (req, res, next) => {
 			const secret = process.env.SECRET;
 			const options = { expiresIn: "1h", algorithm: "HS256" };
 			jwt.sign(payload, secret, options, (err, token) => {
-				res.json({ token: token, message: "Login Successful" });
+				res.status(200).json({ message: "Login Successful", token: token });
 			});
 		} else {
 			// Passwords don't match
-			res.sendStatus(401).json({
-				message: "Authenication Failed: Invalid username or password",
-			});
+			const err = createError(401, "Invalid username or password");
+			next(err);
 		}
 	}
 });
