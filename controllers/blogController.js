@@ -1,14 +1,16 @@
 const Article = require("../models/article");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
+const sanitizeHtml = require("sanitize-html");
 const createError = require("http-errors");
 
 exports.getArticles = asyncHandler(async (req, res, next) => {
 	//allow filtering and pagination
 	const limit = parseInt(req.query.limit) || 0;
+	const order = req.query.order || -1;
 
 	const articles = await Article.find()
-		.sort({ datePosted: 1 })
+		.sort({ datePosted: order === "asc" ? 1 : -1 })
 		.populate("author", "firstname lastname")
 		.limit(limit)
 		.exec();
@@ -49,7 +51,7 @@ exports.createNewArticle = [
 		} else {
 			const newArticle = new Article({
 				title: req.body.title,
-				content: req.body.content,
+				content: sanitizeHtml(req.body.content),
 				author: req.user.user_id,
 				published: req.body.publish,
 			});
@@ -89,7 +91,7 @@ exports.updateArticle = [
 		}
 
 		article.title = req.body.title;
-		article.content = req.body.content;
+		article.content = sanitizeHtml(req.body.content);
 		article.published = req.body.publish;
 		article.dateUpdated = Date.now();
 
