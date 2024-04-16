@@ -23,9 +23,9 @@ exports.getArticle = asyncHandler(async (req, res, next) => {
 	if (!article) {
 		const err = next(createError(404, "Blog Post not found"));
 		next(err);
+	} else {
+		res.json(article);
 	}
-
-	res.json(article);
 });
 
 exports.createNewArticle = [
@@ -46,17 +46,17 @@ exports.createNewArticle = [
 		if (titleExists) {
 			const err = createError(400, "Blog Post with title already exists");
 			next(err);
+		} else {
+			const newArticle = new Article({
+				title: req.body.title,
+				content: req.body.content,
+				author: req.user.user_id,
+				published: req.body.publish,
+			});
+
+			const result = await newArticle.save();
+			res.redirect(result.url);
 		}
-
-		const newArticle = new Article({
-			title: req.body.title,
-			content: req.body.content,
-			author: req.user.user_id,
-			published: req.body.publish,
-		});
-
-		const result = await newArticle.save();
-		res.redirect(result.url);
 	}),
 ];
 
