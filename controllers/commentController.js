@@ -1,12 +1,13 @@
 const Article = require("../models/article");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
+const sanitizeHtml = require("sanitize-html");
 const jwt = require("jsonwebtoken");
 
 /** Each controller function relates to a single post, included in the req params (url slug) */
 
 exports.createNewComment = [
-	body("content", "Comment cannot be empty").trim().escape().notEmpty(),
+	body("content", "Comment cannot be empty").trim().notEmpty(),
 	asyncHandler(async (req, res, next) => {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
@@ -35,8 +36,13 @@ exports.createNewComment = [
 		}
 
 		const newComment = {
-			content: req.body.content,
-			commentor: req.user ? req.user.username : "Anonymous User",
+			content: sanitizeHtml(req.body.content),
+			commentor: req.user
+				? sanitizeHtml(req.user.username)
+				: req.body.commentor
+				? sanitizeHtml(req.body.commentor)
+				: "Anonymous User",
+			//Checks for username from token, then from provided username, then defaults if none of the above
 		};
 
 		article.comments.push(newComment);

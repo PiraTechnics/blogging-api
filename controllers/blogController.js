@@ -20,7 +20,6 @@ exports.getArticles = asyncHandler(async (req, res, next) => {
 exports.getArticle = asyncHandler(async (req, res, next) => {
 	const article = await Article.findOne({ slug: req.params.slug }) //Slugs should be unique
 		.populate("author", "username")
-		.populate("comments")
 		.exec();
 	if (!article) {
 		const err = next(createError(404, "Blog Post not found"));
