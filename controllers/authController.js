@@ -90,3 +90,16 @@ exports.login = asyncHandler(async (req, res, next) => {
 		}
 	}
 });
+
+exports.getUserPermissions = asyncHandler(async (req, res, next) => {
+	//Get current user's admin status (true/false)
+	const user = await User.findOne({ username: req.user.username });
+	if (user === null) {
+		// No user found
+		const err = createError(401, "Invalid username");
+		console.log(err);
+		next(err);
+	} else {
+		res.json(user.admin);
+	}
+});

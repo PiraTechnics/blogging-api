@@ -9,7 +9,7 @@ exports.getArticles = asyncHandler(async (req, res, next) => {
 	const limit = parseInt(req.query.limit) || 0;
 	const order = req.query.order || -1;
 
-	const articles = await Article.find()
+	const articles = await Article.find({ published: true })
 		.sort({ datePosted: order === "asc" ? 1 : -1 })
 		.populate("author", "firstname lastname")
 		.limit(limit)
@@ -17,8 +17,24 @@ exports.getArticles = asyncHandler(async (req, res, next) => {
 	res.json(articles);
 });
 
+exports.getAllArticles = asyncHandler(async (req, res, next) => {
+	//allow filtering and pagination
+	const limit = parseInt(req.query.limit) || 0;
+	const order = req.query.order || -1;
+
+	//limit the articles shown to the logged-in author (can only see/edit own posts in dashboard)
+	const articles = await Article.find({ author: req.user.user_id })
+		.sort({ datePosted: order === "asc" ? 1 : -1 })
+		.limit(limit)
+		.exec();
+	res.json(articles);
+});
+
 exports.getArticle = asyncHandler(async (req, res, next) => {
-	const article = await Article.findOne({ slug: req.params.slug }) //Slugs should be unique
+	const article = await Article.findOne({
+		slug: req.params.slug,
+		published: true,
+	}) //Slugs should be unique
 		.populate("author", "username")
 		.exec();
 	if (!article) {

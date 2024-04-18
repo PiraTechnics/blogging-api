@@ -18,7 +18,7 @@ const ArticleSchema = new Schema({
 	author: { type: Schema.Types.ObjectId, ref: User, required: true },
 	datePosted: { type: Date, default: Date.now },
 	dateUpdated: { type: Date, default: Date.now },
-	published: { type: Boolean, default: false }, //NOTE: will need a way to update this/set it manually
+	published: { type: Boolean, required: true, default: false }, //NOTE: will need a way to update this/set it manually
 	slug: { type: String, unique: true, default: "" },
 	comments: [CommentSchema],
 });

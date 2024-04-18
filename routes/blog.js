@@ -12,6 +12,13 @@ router.get("/", (req, res) => {
 	res.redirect("/blog/posts");
 });
 
+router.get(
+	"/admin",
+	verifyToken,
+	userAuthorized,
+	blogController.getAllArticles
+);
+
 router.get("/posts", blogController.getArticles);
 
 router.post(
