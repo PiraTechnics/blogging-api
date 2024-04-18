@@ -13,7 +13,7 @@ router.get("/", (req, res) => {
 });
 
 router.get(
-	"/admin",
+	"/allposts",
 	verifyToken,
 	userAuthorized,
 	blogController.getAllArticles
