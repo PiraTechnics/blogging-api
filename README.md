@@ -27,3 +27,7 @@ Setup & Installation
 Written for Project: Blog API, _The Odin Project_: https://www.theodinproject.com/lessons/nodejs-blog-api
 
 Thanks to the tireless community of developers and teachers for all you do.
+
+### Known Bugs/Issues
+
+1. API currently does opinionated redirects on some calls -- this should be changed for consistency and intuitive behavior

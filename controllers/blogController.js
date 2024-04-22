@@ -96,7 +96,7 @@ exports.updateArticle = [
 		// Only authors of an article can update it
 		if (article.author.toString() !== req.user.user_id) {
 			console.log(req.user.user_id);
-			console.log(oldArticle.author.toString());
+			console.log(article.author.toString());
 
 			const err = createError(
 				403,
@@ -105,13 +105,20 @@ exports.updateArticle = [
 			next(err);
 		}
 
-		article.title = req.body.title;
-		article.content = sanitizeHtml(req.body.content);
-		article.published = req.body.published;
-		article.dateUpdated = Date.now();
+		const updatedArticle = new Article({
+			title: req.body.title,
+			content: sanitizeHtml(req.body.content),
+			author: req.user.user_id,
+			published: req.body.published,
+			datePosted: article.datePosted,
+			dateUpdated: Date.now(),
+			slug: article.slug,
+			comments: article.comments,
+			_id: article.id,
+		});
 
-		const result = await article.save();
-		res.redirect(result.url); // Redirect to updated Blog Post
+		const result = await Article.findByIdAndUpdate(article.id, updatedArticle);
+		res.json(result);
 	}),
 ];
 
@@ -132,4 +139,5 @@ exports.deleteArticle = asyncHandler(async (req, res, next) => {
 
 	await Article.findOneAndDelete({ slug: req.params.slug });
 	res.redirect("/blog"); // Redirect to home after deleting
+	//Note: We should probaly just be returning confirmations, not doing actual redirects in the API. For future thought
 });
