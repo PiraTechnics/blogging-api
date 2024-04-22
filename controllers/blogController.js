@@ -68,7 +68,7 @@ exports.createNewArticle = [
 				title: req.body.title,
 				content: sanitizeHtml(req.body.content),
 				author: req.user.user_id,
-				published: req.body.publish,
+				published: req.body.published,
 			});
 
 			const result = await newArticle.save();
@@ -107,7 +107,7 @@ exports.updateArticle = [
 
 		article.title = req.body.title;
 		article.content = sanitizeHtml(req.body.content);
-		article.published = req.body.publish;
+		article.published = req.body.published;
 		article.dateUpdated = Date.now();
 
 		const result = await article.save();
