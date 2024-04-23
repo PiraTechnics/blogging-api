@@ -37,7 +37,7 @@ router.put(
 	blogController.updateArticle
 );
 
-router.delete(
+router.post(
 	"/posts/:slug",
 	verifyToken,
 	userAuthorized,
@@ -46,7 +46,7 @@ router.delete(
 
 router.post("/posts/:slug/comment", commentController.createNewComment);
 
-router.delete(
+router.post(
 	"/posts/:slug/comment/:id",
 	verifyToken,
 	userAuthorized,
